@@ -24,9 +24,9 @@
 
 /******************************* Definitions **********************************/
 
-#define DEFAULT_CERT_FILE	"./server.pem"
-#define DEFAULT_KEY_FILE	"./certs/cakey.pem"
-#define DEFAULT_CA_FILE		"./certs/cacert.pem"
+#define DEFAULT_CERT_FILE	"./certs/cl_1.pem"
+#define DEFAULT_KEY_FILE	"./certs/cl_1.pem"
+#define DEFAULT_CA_FILE		"./certs/ca_1.pem"
 #define DEFAULT_CA_PATH		"./certs/"
 #define SSL_PORT			443
 
@@ -97,7 +97,7 @@ int websSSLOpen()
  *	Install and initialize the SSL library
  */
 	apps_startup();
-	trace(7, T("SSL: Initializing SSL\n")); 
+	printf("SSL: Initializing SSL\n"); 
 
 #ifdef SSLC
 	SSL_library_init();
@@ -118,7 +118,7 @@ int websSSLOpen()
 	a_assert(sslctx);
 
 	if (sslctx == NULL) {
-		trace(2, T("SSL: Unable to create SSL context!\n")); 
+		printf("SSL: Unable to create SSL context!\n"); 
 		return -1;
 	}
 
@@ -136,7 +136,7 @@ int websSSLOpen()
 	CAfile = DEFAULT_CA_FILE;
 	if ((!SSL_CTX_load_verify_locations(sslctx, CAfile, CApath)) ||
 		(!SSL_CTX_set_default_verify_paths(sslctx))) {
-		trace(2, T("SSL: Unable to set cert verification locations!\n")); 
+		printf("SSL: Unable to set cert verification locations!\n"); 
 		websSSLClose();
 		return -1;
 	}
@@ -259,7 +259,7 @@ int websSSLAccept(int sid, char *ipaddr, int port, int listenSid)
 /*
  *	Arrange for websSocketEvent to be called when read data is available
  */
-	socketCreateHandler(sid, SOCKET_READABLE, websSSLSocketEvent, (int) wp);
+	socketCreateHandler(sid, SOCKET_READABLE, websSSLSocketEvent, wp);
 
 /*
  *	Arrange for a timeout to kill hung requests
@@ -435,7 +435,7 @@ int websSSLSetCertStuff(SSL_CTX *ctx, char *certFile, char *keyFile)
 	if (certFile != NULL) {
 		if (SSL_CTX_use_certificate_file(ctx, certFile, 
 			SSL_FILETYPE_PEM) <= 0) {
-			trace(2, T("SSL: Unable to set certificate file <%s>\n"),
+			printf("SSL: Unable to set certificate file <%s>\n",
 				certFile); 
 			return -1;
 		}
@@ -445,7 +445,7 @@ int websSSLSetCertStuff(SSL_CTX *ctx, char *certFile, char *keyFile)
 		}
 
 		if (SSL_CTX_use_PrivateKey_file(ctx, keyFile, SSL_FILETYPE_PEM) <= 0) {
-			trace(2, T("SSL: Unable to set private key file <%s>\n"),
+			printf(("SSL: Unable to set private key file <%s>\n"),
 				keyFile); 
 			return -1;
 		}
@@ -455,7 +455,7 @@ int websSSLSetCertStuff(SSL_CTX *ctx, char *certFile, char *keyFile)
  *		the SSL context 
  */
 		if (!SSL_CTX_check_private_key(ctx)) {
-			trace(2, T("SSL: Check of private key file <%s> FAILED!\n"),
+			printf(("SSL: Check of private key file <%s> FAILED!\n"),
 				keyFile); 
 			return -1;
 		}

@@ -231,6 +231,7 @@
 #define F_OK	0
 #endif /* WIN || CE */
 
+#define _STRUCT_TIMEVAL 1
 #if (defined (LINUX) && !defined (_STRUCT_TIMEVAL))
 struct timeval
 {
@@ -840,9 +841,10 @@ extern int		cronFree(cron_t *cp);
 #define SOCKET_BUFSIZ			1024	/* Underlying buffer size */
 #endif /* LITTLEFOOT */
 
-typedef void 	(*socketHandler_t)(int sid, int mask, int data);
+typedef void 	(*socketHandler_t)(int sid, int mask, struct websRec* data);
 typedef int		(*socketAccept_t)(int sid, char *ipaddr, int port, 
 					int listenSid);
+struct websRec;
 typedef struct {
 	char			host[64];				/* Host name */
 	ringq_t			inBuf;					/* Input ring queue */
@@ -850,7 +852,7 @@ typedef struct {
 	ringq_t			lineBuf;				/* Line ring queue */
 	socketAccept_t	accept;					/* Accept handler */
 	socketHandler_t	handler;				/* User I/O handler */
-	int				handler_data;			/* User handler data */
+	struct websRec*  		handler_data;			/* User handler data */
 	int				handlerMask;			/* Handler events of interest */
 	int				sid;					/* Index into socket[] */
 	int				port;					/* Port to listen on */
@@ -1009,7 +1011,7 @@ extern int		scriptEval(int engine, char_t *cmd, char_t **rslt, int chan);
 extern void		socketClose();
 extern void		socketCloseConnection(int sid);
 extern void		socketCreateHandler(int sid, int mask, socketHandler_t 
-					handler, int arg);
+					handler, struct websRec* arg);
 extern void		socketDeleteHandler(int sid);
 extern int		socketEof(int sid);
 extern int 		socketCanWrite(int sid);

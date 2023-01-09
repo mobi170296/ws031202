@@ -737,7 +737,8 @@ int socketSelect(int sid, int timeout)
  *	Allocate and zero the select masks
  */
 	nwords = (socketHighestFd + NFDBITS) / NFDBITS;
-	len = nwords * sizeof(int);
+	// len = nwords * sizeof(int);
+	len = nwords * sizeof(fd_mask);
 
 	readFds = balloc(B_L, len);
 	memset(readFds, 0, len);

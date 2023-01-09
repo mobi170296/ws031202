@@ -434,7 +434,7 @@ void socketSetBufferSize(int sid, int in, int line, int out)
  */
 
 void socketCreateHandler(int sid, int handlerMask, socketHandler_t handler, 
-		int data)
+		struct websRec* data)
 {
 	socket_t	*sp;
 

@@ -73,7 +73,7 @@ static int		websOpenCount = 0;		/* count of apps using this module */
 static int 		websGetInput(webs_t wp, char_t **ptext, int *nbytes);
 static int 		websParseFirst(webs_t wp, char_t *text);
 static void 	websParseRequest(webs_t wp);
-static void		websSocketEvent(int sid, int mask, int data);
+static void		websSocketEvent(int sid, int mask, webs_t data);
 static int		websGetTimeSinceMark(webs_t wp);
 
 #ifdef WEBS_LOG_SUPPORT
@@ -287,7 +287,7 @@ int websAccept(int sid, char *ipaddr, int port, int listenSid)
 /*
  *	Arrange for websSocketEvent to be called when read data is available
  */
-	socketCreateHandler(sid, SOCKET_READABLE, websSocketEvent, (int) wp);
+	socketCreateHandler(sid, SOCKET_READABLE, websSocketEvent, wp);
 
 /*
  *	Arrange for a timeout to kill hung requests
@@ -304,7 +304,7 @@ int websAccept(int sid, char *ipaddr, int port, int listenSid)
  *	is passed as an (int) in iwp.
  */
 
-static void websSocketEvent(int sid, int mask, int iwp)
+static void websSocketEvent(int sid, int mask, webs_t iwp)
 {
 	webs_t	wp;
 
@@ -1949,7 +1949,7 @@ void websDone(webs_t wp, int code)
 				ringqFlush(&wp->header);
 			}
 			socketCreateHandler(wp->sid, SOCKET_READABLE, websSocketEvent, 
-				(int) wp);
+				wp);
 			websTimeoutCancel(wp);
 			wp->timeout = emfSchedCallback(WEBS_TIMEOUT, websTimeout,
 				(void *) wp);
@@ -2380,7 +2380,7 @@ void websSetRequestSocketHandler(webs_t wp, int mask, void (*fn)(webs_t wp))
 	a_assert(websValid(wp));
 
 	wp->writeSocket = fn;
-	socketCreateHandler(wp->sid, SOCKET_WRITABLE, websSocketEvent, (int) wp);
+	socketCreateHandler(wp->sid, SOCKET_WRITABLE, websSocketEvent, wp);
 }
 
 /******************************************************************************/
